@@ -11,28 +11,20 @@
     <v-text-field
       v-model="name"
       :rules="nameRules"
-      :counter="70"
+      :counter="80"
       label="Full Name"
-      maxLength="70"
       required
     ></v-text-field>
 
-    <v-text-field
-      v-model="phone"
-      :rules="phoneRules"
-      label="Phone"
-      maxLength="15"
-    ></v-text-field>
+   <!-- <birthdate-picker v-model="birthdate"></birthdate-picker>-->
 
-    <birthdate-picker v-model="birthdate"></birthdate-picker>
-
-    <v-layout column class="mt-3">
-      <label>Gender:</label>
+  <!-- <v-layout column class="mt-3">
+     <label>Gender:</label>
       <v-radio-group v-model="gender" row>
         <v-radio label="Male" value="male" ></v-radio>
-        <v-radio label="Female" value="female"></v-radio>
+       <v-radio label="Female" value="female"></v-radio>
       </v-radio-group>
-    </v-layout>
+    </v-layout> -->
 
     <v-text-field
       v-model="password"
@@ -61,14 +53,25 @@
       required
     ></v-text-field>
 
-    <v-checkbox
+    <!-- <v-checkbox 
       v-model="termsCheckbox"
       :rules="[v => !!v || 'You must agree to continue!']"
       label="Accept Terms"
-      required
-    ></v-checkbox>
+      required>
+  
+      </v-checkbox> -->
+
+  <v-checkbox v-model="accepted" light>
+      v-model="termsCheckbox"
+      :rules="[v => !!v || 'You must agree to continue!']"
+        <template slot="label">
+         <a @click.stop href="https://everlife.ai/terms.htm" target="_blank"> Accept Terms</a>
+        </template> required
+      </v-checkbox>
+
+
     <v-layout justify-center>
-      <vue-recaptcha :sitekey="reCaptchaSiteKey" v-on:verify="captchaResponse" class="mt-5"></vue-recaptcha>
+      <vue-recaptcha sitekey="6LdfOmgUAAAAAK5Y9Q6TcrIeHVFyw97A9ijOlxvf" v-on:verify="captchaResponse" class="mt-5"></vue-recaptcha>
     </v-layout>
     <p v-if="error" class="red--text">{{error}}</p>
     <v-layout justify-center>
@@ -95,8 +98,7 @@ export default {
     name: "",
     nameRules: [
       v => !!v || "Name is required",
-      v =>
-        /^([^0-9!@#\$%\^\&*\)\(+=._-])+$/.test(v) || "Name must be valid"
+       v => (v && v.length <= 80) || "Name must be less than 80 characters"
     ],
     email: "",
     emailRules: [
@@ -105,13 +107,6 @@ export default {
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
         "E-mail must be valid"
     ],
-
-    phone: "",
-    phoneRules: [
-      v =>
-         /^([0-9]*)$/.test(v) || "Phone Number must be valid"
-    ],
-
     password: "",
     passEye: true,
     passwordRules: [
@@ -124,7 +119,6 @@ export default {
     birthdate: null,
     gender: 'male',
     reCaptcha: null,
-    reCaptchaSiteKey: process.env.CAPTCH_SITE_KEY
   }),
 
   methods: {
@@ -138,7 +132,6 @@ export default {
           .dispatch("signup", {
             name: this.name,
             email: this.email,
-            phone:this.phone,
             birthdate: this.birthdate,
             gender: this.gender,
             password: this.password,
